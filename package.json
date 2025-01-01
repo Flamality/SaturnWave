@@ -1,0 +1,27 @@
+{
+  "name": "flambot",
+  "version": "1.0.0",
+  "description": "Discord bot made by Flamality",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Flamality/discord-bot.git"
+  },
+  "author": "Flamality",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Flamality/discord-bot/issues"
+  },
+  "homepage": "https://github.com/Flamality/discord-bot#readme",
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5",
+    "fs": "^0.0.1-security",
+    "nodemon": "^3.1.9",
+    "path": "^0.12.7"
+  }
+}
