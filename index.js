@@ -96,7 +96,7 @@ client.on("messageCreate", async (message) => {
     await updateUserActivity(serverId, userId);
 
     // LEVELS MODULE
-    manageXPOnMessage(message);
+    // manageXPOnMessage(message);
   } catch (err) {
     console.error("Error in message handler:", err);
   }
