@@ -1,9 +1,10 @@
-import { SlashCommandBuilder } from "discord.js";
+import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { updateServerSettings } from "../../utils/server_settings.js";
 
 export default {
   data: new SlashCommandBuilder()
     .setName("setprefix")
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .setDescription("Set a custom prefix for this server")
     .addStringOption((option) =>
       option
@@ -13,7 +14,9 @@ export default {
     ),
 
   async execute(interaction) {
-    if (!interaction.member.permissions.has("Administrator")) {
+    if (
+      !interaction.member.permissions.has(PermissionFlagsBits.Administrator)
+    ) {
       return interaction.reply({
         content: "You don't have permission to use this command.",
         ephemeral: true,

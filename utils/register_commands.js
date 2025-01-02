@@ -30,14 +30,12 @@ export async function registerCommands(client) {
   for (const file of commandFiles) {
     const fileURL = pathToFileURL(file);
     const command = await import(fileURL);
-    console.log(command);
     commands.push(command.default.data);
 
     client.commands.set(command.default.data.name, command.default);
   }
 
   try {
-    console.log("Registering commands...", commands);
     await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), {
       body: commands,
     });

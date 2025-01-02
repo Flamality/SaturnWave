@@ -1,8 +1,13 @@
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
+import {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  PermissionFlagsBits,
+} from "discord.js";
 
 export default {
   data: new SlashCommandBuilder()
     .setName("ban")
+    .setDefaultMemberPermissions(PermissionFlagsBits.ban)
     .setDescription("Bans a user from the server.")
     .addUserOption((option) =>
       option

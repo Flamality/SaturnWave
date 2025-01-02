@@ -1,15 +1,15 @@
-import { SlashCommandBuilder } from "discord.js";
+import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import {
   updateServerSettings,
   getServerSettings,
 } from "../../utils/server_settings.js";
 
-// List of allowed modules
-const allowedModules = ["module1", "module2", "module3"]; // Add your module names here
+const allowedModules = ["inactivity", "levels"];
 
 export default {
   data: new SlashCommandBuilder()
     .setName("module")
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .setDescription("Manage bot modules.")
     .addSubcommand((subcommand) =>
       subcommand
@@ -23,9 +23,8 @@ export default {
             )
             .setRequired(true)
             .addChoices(
-              { name: "Module 1", value: "module1" },
-              { name: "Module 2", value: "module2" },
-              { name: "Module 3", value: "module3" }
+              { name: "Inactivity", value: "inactivity" },
+              { name: "Levels", value: "levels" }
             )
         )
     )
@@ -41,9 +40,8 @@ export default {
             )
             .setRequired(true)
             .addChoices(
-              { name: "Module 1", value: "module1" },
-              { name: "Module 2", value: "module2" },
-              { name: "Module 3", value: "module3" }
+              { name: "Inactivity", value: "inactivity" },
+              { name: "Levels", value: "levels" }
             )
         )
     )
@@ -61,14 +59,12 @@ export default {
     if (subcommand === "enable" || subcommand === "disable") {
       const moduleName = interaction.options.getString("module");
 
-      // Check if the module is in the allowed modules list
       if (!allowedModules.includes(moduleName)) {
         return interaction.reply(`The module "${moduleName}" is not allowed.`);
       }
 
       const settings = await getServerSettings(serverId);
 
-      // Enable or disable the module based on the subcommand
       settings.modules = settings.modules || {};
       settings.modules[moduleName] = subcommand === "enable" ? true : false;
       updateServerSettings(serverId, settings);
@@ -83,15 +79,55 @@ export default {
       const modules = settings.modules || {};
 
       let statusMessage = "Current module status:\n";
+
+      // Check if there are no modules in the settings
       if (Object.keys(modules).length === 0) {
         statusMessage = "No modules found or no modules enabled.";
       } else {
-        for (const [module, status] of Object.entries(modules)) {
-          statusMessage += `${module}: ${status ? "Enabled" : "Disabled"}\n`;
-        }
+        // Loop through allowed modules and check their status
+        allowedModules.forEach((module) => {
+          const isEnabled = modules.hasOwnProperty(module)
+            ? modules[module]
+            : false;
+          statusMessage += `${module}: ${
+            isEnabled ? "🟢 Enabled" : "🔴 Disabled"
+          }\n`;
+        });
       }
 
-      await interaction.reply(statusMessage);
+      const embed = {
+        color: 0x0099ff,
+        title: "Module Status",
+        description: "Here are the current status of the modules:",
+        fields: [],
+        footer: {
+          text: "Use `/help` to learn more about each module.",
+        },
+        timestamp: new Date(),
+      };
+
+      // Loop through allowed modules and build embed fields
+      allowedModules.forEach((module) => {
+        const status = modules.hasOwnProperty(module) ? modules[module] : false;
+        const statusColor = status ? "🟢" : "🔴";
+
+        embed.fields.push({
+          name: `**${module}**`,
+          value: `${statusColor} ${status ? "Enabled" : "Disabled"}`,
+          inline: true,
+        });
+      });
+
+      // Add a final status message if no modules found
+      if (Object.keys(modules).length === 0) {
+        embed.fields.push({
+          name: "No modules enabled",
+          value: "🔴 All modules are currently disabled.",
+          inline: false,
+        });
+      }
+
+      await interaction.reply({ embeds: [embed] });
     }
   },
 };
