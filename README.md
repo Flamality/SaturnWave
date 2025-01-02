@@ -21,6 +21,6 @@ SaturnWave is an open-source Discord bot with a variety of commands to improve y
 
 ## Version
 
-Current version: **V1.04**
+Current version: **V1.06**
 
 SaturnWave is open-source and maintained by its creator. Feel free to explore the code and adapt it for your own needs.

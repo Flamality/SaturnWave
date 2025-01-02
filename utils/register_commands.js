@@ -3,7 +3,6 @@ import path from "path";
 import { pathToFileURL } from "url";
 import { REST, Routes } from "discord.js";
 
-// Function to recursively fetch command files
 export function getCommandFiles(dir) {
   let files = [];
   const items = fs.readdirSync(dir);
@@ -11,30 +10,29 @@ export function getCommandFiles(dir) {
   items.forEach((item) => {
     const fullPath = path.join(dir, item);
     if (fs.statSync(fullPath).isDirectory()) {
-      files = files.concat(getCommandFiles(fullPath)); // Recurse into subdirectories
+      files = files.concat(getCommandFiles(fullPath));
     } else if (item.endsWith(".js")) {
-      files.push(fullPath); // Add .js files
+      files.push(fullPath);
     }
   });
 
   return files;
 }
 
-// Function to register commands
 export async function registerCommands(client) {
   const __dirname = path.resolve();
   const commandsDir = path.join(__dirname, "commands");
   const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
 
-  const commandFiles = getCommandFiles(commandsDir); // Get all command files recursively
+  const commandFiles = getCommandFiles(commandsDir);
   const commands = [];
 
   for (const file of commandFiles) {
-    const fileURL = pathToFileURL(file); // Convert file path to file URL
-    const command = await import(fileURL); // Import the command file dynamically
-    commands.push(command.default.data.toJSON());
+    const fileURL = pathToFileURL(file);
+    const command = await import(fileURL);
+    console.log(command);
+    commands.push(command.default.data);
 
-    // Add the command to the client.commands collection
     client.commands.set(command.default.data.name, command.default);
   }
 
