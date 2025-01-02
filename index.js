@@ -6,7 +6,7 @@ import {
   updateUserActivity,
 } from "./modules/inactivity.js";
 import pkg from "pg";
-import { manageXPOnMessage } from "./modules/levels.js";
+// import { manageXPOnMessage } from "./modules/levels.js";
 const { Client: DBClient } = pkg;
 
 export const dbclient = new DBClient({
