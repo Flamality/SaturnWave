@@ -6,9 +6,6 @@ import { dbclient } from "../index.js";
 import { v4 } from "uuid";
 export async function getLastActivityTimestamp(serverId, userId) {
   try {
-    await dbclient.query(`ALTER TABLE activity_prod
-ALTER COLUMN timestamp TYPE BIGINT;
-`);
     const res = await dbclient.query(
       `SELECT * FROM activity_prod WHERE sid = $1 AND uid = $2`,
       [serverId, userId]
@@ -26,6 +23,9 @@ ALTER COLUMN timestamp TYPE BIGINT;
 
 export async function updateLastActivityTimestamp(serverId, userId, timestamp) {
   try {
+    const updateType = await dbclient.query(`ALTER TABLE activity_prod
+ALTER COLUMN timestamp TYPE BIGINT;
+`);
     const updateResult = await dbclient.query(
       `UPDATE activity_prod
        SET timestamp = $3
