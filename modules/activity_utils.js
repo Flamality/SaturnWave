@@ -6,6 +6,9 @@ import { dbclient } from "../index.js";
 import { v4 } from "uuid";
 export async function getLastActivityTimestamp(serverId, userId) {
   try {
+    await dbclient.query(`ALTER TABLE activity_prod
+ALTER COLUMN timestamp TYPE BIGINT;
+`);
     const res = await dbclient.query(
       `SELECT * FROM activity_prod WHERE sid = $1 AND uid = $2`,
       [serverId, userId]
