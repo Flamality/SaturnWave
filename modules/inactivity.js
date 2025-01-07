@@ -21,6 +21,7 @@ export async function startInactivityCheck(client) {
       const currentTime = Date.now();
 
       if (
+!settings.modules.inactivity ||
         settings.modules.inactivity === false ||
         !settings.modules.inactivity ||
         !settings.inactivityPeriod
