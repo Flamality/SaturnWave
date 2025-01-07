@@ -44,3 +44,63 @@ You can enable or disable modules with the following commands:
 **Current version**: **V1.1**
 
 SaturnWave is open-source and maintained by its creator. Feel free to explore the code and adapt it for your needs.
+
+### What to expect
+
+We are currently very early in development, so we have lots of features planned.
+
+Here is our plans.
+
+**MODULES**
+
+- AFK
+- Customization
+- Automod+
+- Fun
+- Econemy
+- Levels
+- Rules
+- Use prefix instead of application commands
+
+**COMMANDS**
+
+Core
+
+- /whois
+- /membercount
+- /welcomemessage
+- /leavemessage
+
+Moderation
+
+- /Timeout /mute /removetimeout /unmute
+- /Quarentine
+- /Slowmode
+- /Lock /unlock
+- /softban
+- /temprole
+- /clear /purge
+
+Fun
+
+- /8ball
+- /joke
+- /weather
+- /truthordare
+- /rps
+
+Role management
+
+- /rolecreate
+- /roledelete
+- /roleadd
+- /roleremove
+- /rolecolor
+- /rolelist
+
+**OTHER SYSTEMS**
+
+- Cases system (simular to Dyno or Wick)
+- Permissions system (Differ from discord permissions, perms to use commands)
+
+If you have any more ideas create an issue on the github repo.
