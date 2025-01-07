@@ -45,7 +45,7 @@ You can enable or disable modules with the following commands:
 
 SaturnWave is open-source and maintained by its creator. Feel free to explore the code and adapt it for your needs.
 
-### What to expect
+## **What to expect**
 
 We are currently very early in development, so we have lots of features planned.
 
