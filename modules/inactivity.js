@@ -11,17 +11,17 @@ import {
 const INACTIVITY_CHECK_INTERVAL = 3000 * 60 * 5;
 export async function startInactivityCheck(client) {
   setInterval(async () => {
-    client.guilds.cache.forEach(async (guild) => {
-      const serverId = guild.id;
+    client?.guilds?.cache.forEach(async (guild) => {
+      const serverId = guild?.id;
       const settings = await getServerSettings(serverId);
 
-      const ignoreRoles = settings.inactivityBlacklist; // Get roles to be ignored
+      const ignoreRoles = settings?.inactivityBlacklist; // Get roles to be ignored
 
-      const inactivityPeriod = settings.inactivityPeriod * 60 * 60 * 1000;
+      const inactivityPeriod = settings?.inactivityPeriod * 60 * 60 * 1000;
       const currentTime = Date.now();
 
       if (
-!settings.modules.inactivity ||
+!settings?.modules?.inactivity ||
         settings?.modules?.inactivity === false ||
         !settings?.modules?.inactivity ||
         !settings?.inactivityPeriod
