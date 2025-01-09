@@ -39,8 +39,8 @@ export async function startInactivityCheck(client) {
         if (member.bot) continue;
 
         // Check if the member has any of the roles in the ignore list
-        const hasIgnoredRole = member.roles.cache.some((role) =>
-          ignoreRoles.includes(role.id)
+        const hasIgnoredRole = member?.roles?.cache.some((role) =>
+          ignoreRoles?.includes(role.id)
         );
 
         if (hasIgnoredRole) {
