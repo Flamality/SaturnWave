@@ -22,9 +22,9 @@ export async function startInactivityCheck(client) {
 
       if (
 !settings.modules.inactivity ||
-        settings.modules.inactivity === false ||
-        !settings.modules.inactivity ||
-        !settings.inactivityPeriod
+        settings?.modules?.inactivity === false ||
+        !settings?.modules?.inactivity ||
+        !settings?.inactivityPeriod
       ) {
         try {
           await guild.members.fetch();
@@ -90,5 +90,8 @@ export async function startInactivityCheck(client) {
 
 export async function updateUserActivity(guildId, userId) {
   const currentTime = Date.now();
-  await updateLastActivityTimestamp(guildId, userId, currentTime);
+try {
+  await updateLastActivityTimestamp(guildId, userId, currentTime);} catch (e) {
+console.log(e)
+}
 }
