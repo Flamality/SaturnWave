@@ -190,9 +190,9 @@ Make sure you have these installed before starting:
 
    ```sql
    CREATE TABLE servers (
-   server_id BIGINT PRIMARY KEY,
+   guildid BIGINT PRIMARY KEY,
    settings JSON NOT NULL,
-   cases JSON NOT NULL
+   cases JSONB NOT NULL
    );
    ```
 

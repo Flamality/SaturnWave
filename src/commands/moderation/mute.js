@@ -3,14 +3,15 @@ import ms from "ms";
 import { default as prettyMS } from "pretty-ms";
 import {
   commandFollowupSuccess,
+  modActionDM,
   modActionFollowup,
   modActionFollowupFail,
+  modActionMessage,
 } from "../../utils/userEvents.js";
 import { Server } from "../../models/Settings.js";
 
 export default {
   callback: async (client, interaction, commandData) => {
-    console.log(commandData.args);
     const isCommand = interaction.isCommand?.();
     let targetUID = commandData.args[0];
     let duration = commandData.args[1];
@@ -31,60 +32,65 @@ export default {
     try {
       targetUser = await interaction.guild.members.fetch(targetUID);
     } catch (error) {
-      await modActionFollowupFail(
+      await modActionMessage({
         interaction,
-        false,
-        "mute",
-        "user",
-        "Cannot find user."
-      );
+        success: false,
+        action: "Mute",
+        actionLine: "Cannot find user.",
+      });
       return;
     }
 
     // 🤖 Prevent muting bots
     if (targetUser.user.bot) {
-      await modActionFollowupFail(
+      await modActionMessage({
         interaction,
-        false,
-        "mute",
-        targetUser,
-        "Cannot mute a bot."
-      );
+        success: false,
+        action: "Mute",
+        actionLine: "Cannot mute a bot.",
+      });
       return;
     }
 
     // ⏲️ Duration checks
-    const msDuration = ms(duration);
-    if (isNaN(msDuration)) {
-      await modActionFollowupFail(
+    let msDuration = false;
+    try {
+      msDuration = ms(duration);
+    } catch (error) {
+      await modActionMessage({
         interaction,
-        false,
-        "mute",
-        targetUser,
-        "Invalid duration format."
-      );
+        success: false,
+        action: "Mute",
+        actionLine: "Invalid time format.",
+      });
       return;
     }
-
-    if (msDuration < 5000) {
-      await modActionFollowupFail(
+    if (isNaN(msDuration)) {
+      await modActionMessage({
         interaction,
-        false,
-        "mute",
-        targetUser,
-        "Duration cannot be less than 5 seconds."
-      );
+        success: false,
+        action: "Mute",
+        actionLine: "Invalid time format.",
+      });
+      return;
+    }
+    if (msDuration < 5000) {
+      await modActionMessage({
+        interaction,
+        success: false,
+        action: "Mute",
+        actionLine: "Duration cannot be less than 5 seconds.",
+      });
       return;
     }
 
     if (msDuration > 2.419e9) {
-      await modActionFollowupFail(
+      await modActionMessage({
         interaction,
-        false,
-        "mute",
-        targetUser,
-        "Duration cannot exceed 28 days."
-      );
+        success: false,
+        action: "Mute",
+        actionLine: "Duration cannot exceed 28 days.",
+      });
       return;
     }
 
@@ -95,39 +101,46 @@ export default {
     const botRolePosition = botMember.roles.highest.position;
 
     if (targetUserRolePosition >= requestUserRolePosition) {
-      await modActionFollowupFail(
+      await modActionMessage({
         interaction,
-        false,
-        "mute",
-        targetUser,
-        "You cannot mute this user."
-      );
+        success: false,
+        action: "Mute",
+        actionLine: "You cannot mute this user.",
+      });
       return;
     }
 
     if (targetUserRolePosition >= botRolePosition) {
-      await modActionFollowupFail(
+      await modActionMessage({
         interaction,
-        false,
-        "mute",
-        targetUser,
-        "I cannot mute this user."
-      );
+        success: false,
+        action: "Mute",
+        actionLine: "I cannot mute this user.",
+      });
       return;
     }
 
     // 🔇 Apply mute
     try {
       await targetUser.timeout(msDuration, reason);
-      await modActionFollowup(
+      const dmStatus = await modActionDM({
+              client,
+              interaction,
+              userID: targetUser.id,
+              action: "Mute",
+              actionLine: "muted",
+              reason: reason,
+              duration:  prettyMS(msDuration, { verbose: true }),
+            });
+      await modActionMessage({
         interaction,
-        true,
-        "mute",
-        targetUser,
+        success: true,
+        action: "Mute",
+        actionLine: `Muted ${targetUser}`,
         reason,
-        false,
-        prettyMS(msDuration, { verbose: true })
-      );
+        duration: prettyMS(msDuration, { verbose: true }),
+        dmStatus
+      });
       await Server.addCase({
         serverID: interaction.guild.id,
         userID: targetUser.id,
@@ -137,13 +150,12 @@ export default {
       });
     } catch (error) {
       console.error("There was an error when muting:", error);
-      await modActionFollowupFail(
+      await modActionMessage({
         interaction,
-        false,
-        "mute",
-        targetUser,
-        "Unknown error occurred when executing this command."
-      );
+        success: false,
+        action: "Mute",
+        actionLine: "Unknown error occured while executing this command.",
+      });
     }
   },
 

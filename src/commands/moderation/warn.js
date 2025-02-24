@@ -84,7 +84,7 @@ export default {
         interaction,
         userID: targetUser.id,
         action: "Warn",
-        actionLine: "warnned",
+        actionLine: "warned",
         reason: reason,
         expires: Date.now() + 2.592e9,
       });

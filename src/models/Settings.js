@@ -124,15 +124,15 @@ export class Server {
   // Add a case to the guild with a generated case number
   static async addCase({ serverID, userID, type, reason, expires, proof }) {
     const getCurrentCaseNumberQuery = `
-      SELECT MAX((cases ->> 'caseNumber')::int) AS max_case_number
-      FROM servers
-      WHERE "guildid" = $1;
+      SELECT jsonb_array_length(cases) AS case_count
+FROM servers
+WHERE "guildid" = $1;
     `;
     const values = [serverID];
 
     try {
       const result = await dbclient.query(getCurrentCaseNumberQuery, values);
-      const maxCaseNumber = result.rows[0]?.max_case_number || 0;
+      const maxCaseNumber = result.rows[0]?.case_count || 0;
       const newCaseNumber = maxCaseNumber + 1; // Case number increments by 1
 
       const newCase = {

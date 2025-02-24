@@ -97,7 +97,7 @@ export const modActionMessage = async ({
   action,
   actionLine,
   targetUser,
-  dmStatus = null,
+  dmStatus = "none",
   reason = null,
   duration = null,
   expires = null,
@@ -108,8 +108,8 @@ export const modActionMessage = async ({
     .setTitle("Mod Action // " + action ?? "Mod Action")
     .setDescription(
       (success
-        ? "<:checkmark:1342977846741696542>"
-        : "<:crossmark:1342977857239912500>") +
+        ? "<:checkmark:1342977846741696542> "
+        : "<:crossmark:1342977857239912500> ") +
         (actionLine ?? `Action ${action ?? "mod action"} was performed.`)
     )
     .setTimestamp();
@@ -146,14 +146,12 @@ export const modActionMessage = async ({
       value: extraInfo,
     });
   }
-
-  if (!dmStatus === null) {
+  if (dmStatus != "none") {
     embed.addFields({
-      name: `DM ${
-        dmStatus
+      name: `DM`,
+      value: dmStatus
           ? "<:checkmark:1342977846741696542>"
-          : "<:crossmark:1342977857239912500>"
-      }`,
+          : "<:crossmark:1342977857239912500>",
     });
   }
   if (interaction.isCommand?.()) {

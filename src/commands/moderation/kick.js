@@ -1,89 +1,101 @@
 import { ApplicationCommandOptionType, PermissionFlagsBits } from "discord.js";
 import {
+  modActionDM,
   modActionFollowup,
   modActionFollowupFail,
+  modActionMessage,
 } from "../../utils/userEvents.js";
 
 export default {
-  callback: async (client, interaction) => {
-    const targetUID = interaction.options.get("target").value;
-    const reason =
-      interaction.options.get("reason")?.value || "No reason provided.";
-
-    await interaction.deferReply();
-
-    try {
-      const targetUser = await interaction.guild.members.fetch(targetUID);
-    } catch (error) {
-      await modActionFollowupFail(
-        interaction,
-        false,
-        "kick",
-        "user",
-        "Cannot find user."
-      );
-      return;
-    }
-    const targetUser = await interaction.guild.members.fetch(targetUID);
-
-    if (targetUser.id === interaction.guild.ownerId) {
-      await modActionFollowupFail(
-        interaction,
-        false,
-        "kick",
-        targetUser,
-        "You cannot kick the server owner."
-      );
-      return;
-    }
-    const botMember = await interaction.guild.members.fetchMe();
-
-    const targetUserRolePosition = targetUser.roles.highest.position;
-    const requestUserRolePosition = interaction.member.roles.highest.position;
-    const botRolePosition = botMember.roles.highest.position;
-
-    if (targetUserRolePosition >= requestUserRolePosition) {
-      await modActionFollowupFail(
-        interaction,
-        false,
-        "kick",
-        targetUser,
-        "You cannot kick this user."
-      );
-      return;
-    }
-
-    if (targetUserRolePosition >= botRolePosition) {
-      await modActionFollowupFail(
-        interaction,
-        false,
-        "kick",
-        targetUser,
-        "I cannot kick this user."
-      );
-      return;
-    }
-
-    try {
-      await targetUser.kick(reason);
-      await modActionFollowup(
-        interaction,
-        true,
-        "kick",
-        targetUser,
-        reason,
-        false
-      );
-    } catch (error) {
-      console.log("There was an error when kicking");
-      await modActionFollowupFail(
-        interaction,
-        false,
-        "kick",
-        targetUser,
-        "Unknown error occured when executing this command."
-      );
-    }
+  callback: async (client, interaction, commandData) => {
+        const isCommand = interaction.isCommand?.();
+        let targetUID = commandData.args[0];
+    
+        let reason = commandData.args.slice(2).join(" ") || "No reason provided.";
+        if (interaction.reference?.messageId) {
+          const repliedMessage = await interaction.channel.messages.fetch(
+            interaction.reference.messageId
+          );
+          const repliedUserId = repliedMessage.author.id;
+          targetUID = repliedUserId;
+          duration = commandData.args[0];
+          reason = commandData.args.slice(1).join(" ") || "No reason provided.";
+        }
+    
+        if (isCommand) await interaction.deferReply();
+        let targetUser;
+        try {
+          targetUser = await interaction.guild.members.fetch(targetUID);
+        } catch (error) {
+          await modActionMessage({
+            interaction,
+            success: false,
+            action: "Mute",
+            actionLine: "Cannot find user.",
+          });
+          return;
+        }
+    
+        // 🔑 Role hierarchy checks
+        const botMember = await interaction.guild.members.fetchMe();
+        const targetUserRolePosition = targetUser.roles.highest.position;
+        const requestUserRolePosition = interaction.member.roles.highest.position;
+        const botRolePosition = botMember.roles.highest.position;
+    
+        if (targetUserRolePosition >= requestUserRolePosition) {
+          await modActionMessage({
+            interaction,
+            success: false,
+            action: "Kick",
+            actionLine: "You cannot kick this user.",
+          });
+          return;
+        }
+    
+        if (targetUserRolePosition >= botRolePosition) {
+          await modActionMessage({
+            interaction,
+            success: false,
+            action: "Kick",
+            actionLine: "I cannot kick this user.",
+          });
+          return;
+        }
+    
+        // 🔇 Apply mute
+        try {
+          const dmStatus = await modActionDM({
+                  client,
+                  interaction,
+                  userID: targetUser.id,
+                  action: "Kick",
+                  actionLine: "kicked",
+                  reason: reason,
+                });
+          await targetUser.kick(reason);
+          await modActionMessage({
+            interaction,
+            success: true,
+            action: "Kick",
+            actionLine: `Kicked ${targetUser}`,
+            reason,
+            dmStatus
+          });
+          await Server.addCase({
+            serverID: interaction.guild.id,
+            userID: targetUser.id,
+            type: "kick",
+            reason: reason,
+          });
+        } catch (error) {
+          console.error("There was an error when muting:", error);
+          await modActionMessage({
+            interaction,
+            success: false,
+            action: "Kick",
+            actionLine: "Unknown error occured while executing this command.",
+          });
+        }
   },
   name: "kick",
   description: "Kick a user!",
