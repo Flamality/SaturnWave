@@ -1,8 +1,6 @@
 import { ApplicationCommandOptionType, PermissionFlagsBits } from "discord.js";
 import {
   modActionDM,
-  modActionFollowup,
-  modActionFollowupFail,
   modActionMessage,
 } from "../../utils/userEvents.js";
 
@@ -30,7 +28,7 @@ export default {
           await modActionMessage({
             interaction,
             success: false,
-            action: "Mute",
+            action: "Kick",
             actionLine: "Cannot find user.",
           });
           return;

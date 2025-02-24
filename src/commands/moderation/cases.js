@@ -5,7 +5,6 @@ import {
 } from "discord.js";
 import { Server } from "../../models/Settings.js";
 import {
-  modActionFollowupFail,
   modActionMessage,
 } from "../../utils/userEvents.js";
 
