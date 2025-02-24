@@ -3,10 +3,9 @@ import createRankCard, { getLevel, xpForLevel } from "../../utils/levels.js";
 import { Level } from "../../models/Level.js";
 
 export default {
-  callback: async (client, interaction) => {
-    await interaction.deferReply();
-    const userID = interaction.user.id;
-    const guildID = interaction.guild.id;
+  callback: async (client, interaction, commandData) => {
+    const userID = commandData.author.id;
+    const guildID = commandData.guild.id;
     let levelData = { xp: 0 };
     try {
       const data = await Level.findOne({ userID, guildID });
@@ -19,12 +18,12 @@ export default {
     const neededXP = xpForLevel(level);
     const lastLevelXP = xpForLevel(level - 1);
     const userData = {
-      username: interaction.user.username,
+      username: commandData.author.username,
       xp: levelData.xp,
       level,
       neededXP,
       lastLevelXP,
-      avatarHash: interaction.user.avatar,
+      avatarHash: commandData.author.avatar,
       userID,
       serverRank,
     };
@@ -34,10 +33,10 @@ export default {
       const attachment = new AttachmentBuilder(rankCardBuffer, {
         name: "rankcard.png",
       });
-      interaction.editReply({ files: [attachment] });
+      interaction.reply({ files: [attachment] });
     } catch (err) {
       console.error("Error creating rank card:", err);
-      interaction.editReply("There was an error creating your rank card!");
+      interaction.reply("There was an error creating your rank card!");
     }
   },
   name: "rank",

@@ -4,95 +4,120 @@ import { default as prettyMS } from "pretty-ms";
 import {
   commandFollowupSuccess,
   modActionFollowup,
+  modActionFollowupFail,
 } from "../../utils/userEvents.js";
+import { Server } from "../../models/Settings.js";
 
 export default {
-  callback: async (client, interaction) => {
-    const targetUID = interaction.options.get("target").value;
-    const duration = interaction.options.get("duration").value;
-    const reason =
-      interaction.options.get("reason")?.value || "No reason provided.";
+  callback: async (client, interaction, commandData) => {
+    console.log(commandData.args);
+    const isCommand = interaction.isCommand?.();
+    let targetUID = commandData.args[0];
+    let duration = commandData.args[1];
 
-    await interaction.deferReply();
+    let reason = commandData.args.slice(2).join(" ") || "No reason provided.";
+    if (interaction.reference?.messageId) {
+      const repliedMessage = await interaction.channel.messages.fetch(
+        interaction.reference.messageId
+      );
+      const repliedUserId = repliedMessage.author.id;
+      targetUID = repliedUserId;
+      duration = commandData.args[0];
+      reason = commandData.args.slice(1).join(" ") || "No reason provided.";
+    }
 
+    if (isCommand) await interaction.deferReply();
+    let targetUser;
     try {
-      const targetUser = await interaction.guild.members.fetch(targetUID);
+      targetUser = await interaction.guild.members.fetch(targetUID);
     } catch (error) {
-      await interaction.editReply({
-        content: "Cannot find user.",
-        ephemeral: true,
-      });
-      return;
-    }
-    const targetUser = await interaction.guild.members.fetch(targetUID);
-    if (targetUser.user.bot) {
-      await interaction.editReply({
-        content: "Cannot mute a bot.",
-        ephemeral: true,
-      });
+      await modActionFollowupFail(
+        interaction,
+        false,
+        "mute",
+        "user",
+        "Cannot find user."
+      );
       return;
     }
 
+    // 🤖 Prevent muting bots
+    if (targetUser.user.bot) {
+      await modActionFollowupFail(
+        interaction,
+        false,
+        "mute",
+        targetUser,
+        "Cannot mute a bot."
+      );
+      return;
+    }
+
+    // ⏲️ Duration checks
     const msDuration = ms(duration);
     if (isNaN(msDuration)) {
-      await interaction.editReply({
-        content: "Invalid duration format.",
-        ephemeral: true,
-      });
+      await modActionFollowupFail(
+        interaction,
+        false,
+        "mute",
+        targetUser,
+        "Invalid duration format."
+      );
       return;
     }
-    if (msDuration < 5000) {
-      await interaction.editReply({
-        content: "Duration must be at least 5 seconds.",
-        ephemeral: true,
-      });
-      return;
-    }
-    if (msDuration > 2.419e9) {
-      await interaction.editReply({
-        content: "Duration cannot exceed 28 days.",
-        ephemeral: true,
-      });
-      return;
-    }
-    const botMember = await interaction.guild.members.fetchMe();
 
+    if (msDuration < 5000) {
+      await modActionFollowupFail(
+        interaction,
+        false,
+        "mute",
+        targetUser,
+        "Duration cannot be less than 5 seconds."
+      );
+      return;
+    }
+
+    if (msDuration > 2.419e9) {
+      await modActionFollowupFail(
+        interaction,
+        false,
+        "mute",
+        targetUser,
+        "Duration cannot exceed 28 days."
+      );
+      return;
+    }
+
+    // 🔑 Role hierarchy checks
+    const botMember = await interaction.guild.members.fetchMe();
     const targetUserRolePosition = targetUser.roles.highest.position;
     const requestUserRolePosition = interaction.member.roles.highest.position;
     const botRolePosition = botMember.roles.highest.position;
 
     if (targetUserRolePosition >= requestUserRolePosition) {
-      await interaction.editReply({
-        content: "You cannot mute this user.",
-        ephemeral: true,
-      });
+      await modActionFollowupFail(
+        interaction,
+        false,
+        "mute",
+        targetUser,
+        "You cannot mute this user."
+      );
       return;
     }
 
     if (targetUserRolePosition >= botRolePosition) {
-      await interaction.editReply({
-        content: "I cannot mute this user.",
-        ephemeral: true,
-      });
+      await modActionFollowupFail(
+        interaction,
+        false,
+        "mute",
+        targetUser,
+        "I cannot mute this user."
+      );
       return;
     }
 
+    // 🔇 Apply mute
     try {
-      if (targetUser.isCommunicationDisabled()) {
-        await targetUser.timeout(msDuration, reason);
-        await modActionFollowup(
-          interaction,
-          true,
-          "mute",
-          targetUser,
-          reason,
-          false,
-          prettyMS(msDuration, {
-            verbose: true,
-          })
-        );
-        return;
-      }
       await targetUser.timeout(msDuration, reason);
       await modActionFollowup(
         interaction,
@@ -101,18 +126,27 @@ export default {
         targetUser,
         reason,
         false,
-        prettyMS(msDuration, {
-          verbose: true,
-        })
+        prettyMS(msDuration, { verbose: true })
       );
-    } catch (error) {
-      console.log("There was an error when mutting", error);
-      await interaction.editReply({
-        content: "Error occurred while trying to mute user.",
-        ephemeral: true,
+      await Server.addCase({
+        serverID: interaction.guild.id,
+        userID: targetUser.id,
+        type: "mute",
+        reason: reason,
+        expires: Date.now() + msDuration,
       });
+    } catch (error) {
+      console.error("There was an error when muting:", error);
+      await modActionFollowupFail(
+        interaction,
+        false,
+        "mute",
+        targetUser,
+        "Unknown error occurred when executing this command."
+      );
     }
   },
+
   name: "mute",
   description: "Mute a user!",
   devOnly: false,

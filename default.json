@@ -1,0 +1,13 @@
+{
+  "general": {
+    "prefix": ";"
+  },
+  "modules": {
+    "levels": true
+  },
+  "levels": {
+    "multiplier": 1.2,
+    "min-xp": 10,
+    "max-xp": 15
+  }
+}

@@ -186,6 +186,16 @@ Make sure you have these installed before starting:
    );
    ```
 
+   as well as
+
+   ```sql
+   CREATE TABLE servers (
+   server_id BIGINT PRIMARY KEY,
+   settings JSON NOT NULL,
+   cases JSON NOT NULL
+   );
+   ```
+
 9. **Start the Bot:**  
    In the terminal, run:
    ```bash

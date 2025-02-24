@@ -4,15 +4,12 @@ export default {
   devOnly: false,
   testOnly: false,
   options: [],
-  callback: async (client, interaction) => {
-    await interaction.deferReply();
+  callback: async (client, interaction, commandData) => {
+    const sentMessage = await interaction.reply("Pong!");
+    const ping = sentMessage.createdTimestamp - interaction.createdTimestamp;
 
-    const reply = await interaction.fetchReply();
-
-    const ping = reply.createdTimestamp - interaction.createdTimestamp;
-
-    interaction.editReply(
-      `Pong! Client: ${ping}ms | Websocket: ${client.ws.ping}ms`
+    sentMessage.edit(
+      `Pong! Client: ${ping}ms | WebSocket: ${client.ws.ping}ms`
     );
   },
 };
