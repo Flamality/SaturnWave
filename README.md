@@ -2,7 +2,7 @@
 
 **SaturnWave** is an open-source Discord bot that offers a variety of commands to enhance your server's functionality and engagement.
 
-> **Caution**
+> [!CAUTION]
 > This bot is NOT intended to be used for production in it's current state. This project is still under development and not meant for public use yet. This bot will NOT work right.
 
 ## **Commands**
