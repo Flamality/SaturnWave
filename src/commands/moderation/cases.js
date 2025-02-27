@@ -5,7 +5,6 @@ import {
 } from "discord.js";
 import { Server } from "../../models/Settings.js";
 import {
-  modActionFollowupFail,
   modActionMessage,
 } from "../../utils/userEvents.js";
 
@@ -64,9 +63,10 @@ export default {
     cases.forEach((userCase, index) => {
       casesDescription += `
 **Case #${index + 1}:** ${userCase.type}  
-**Reason:** ${userCase.reason}  
+**Reason:** ${userCase.reason} 
 **Expires:** <t:${Math.floor(userCase.expires / 1000)}:R>  
-**Proof:** ${userCase.proof}\n\n`;
+**Proof:** ${userCase.proof}
+**Case #:** ${userCase.caseNumber}\n`;
     });
 
     // Set the embed description
