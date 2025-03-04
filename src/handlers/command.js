@@ -20,8 +20,10 @@ export default async (client, interaction) => {
       (cmd) => cmd.default.name === interaction.commandName
     );
     if (!commandObject) return;
-
-    args = interaction.options.data.map((option) => option.value);
+    args = interaction.options._hoistedOptions.map((option) => option.value);
+    if (interaction.options._subcommand) {
+      args.unshift(interaction.options._subcommand);
+    }
     cleanArgs(args, commandObject);
 
     commandData = {
@@ -36,7 +38,9 @@ export default async (client, interaction) => {
     args = interaction.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift()?.toLowerCase();
     const commandObject = localCommands.find(
-      (cmd) => cmd.default.name === commandName
+      (cmd) =>
+        cmd.default.name === commandName ||
+        (cmd.default.alias && cmd.default.alias.includes(commandName))
     );
 
     if (!commandObject) return;
@@ -139,7 +143,7 @@ const cleanArgs = (args, commandObject) => {
     const optionObject = commandObject?.default?.options[i];
     if (!optionObject) return;
 
-    if (optionObject.name === "target") {
+    if (optionObject.type === ApplicationCommandOptionType.User) {
       args[i] = cleanId(arg);
     }
 

@@ -1,11 +1,9 @@
 import { createCanvas, loadImage } from "canvas";
 
-// Function to create the rank card
 async function createRankCard(userData) {
   const canvas = createCanvas(600, 180);
   const ctx = canvas.getContext("2d");
 
-  // Create a more vibrant background gradient
   const gradient = ctx.createLinearGradient(0, 0, 600, 180);
   gradient.addColorStop(0, "#4158D0");
   gradient.addColorStop(0.46, "#C850C0");
@@ -13,7 +11,6 @@ async function createRankCard(userData) {
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, 600, 180);
 
-  // Add shimmering effect
   ctx.globalAlpha = 0.05;
   for (let i = 0; i < 600; i += 20) {
     for (let j = 0; j < 180; j += 20) {
@@ -25,21 +22,17 @@ async function createRankCard(userData) {
   }
   ctx.globalAlpha = 1;
 
-  // Semi-transparent overlay for better text visibility
   ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
   ctx.beginPath();
   ctx.roundRect(20, 20, 560, 140, 15);
   ctx.fill();
 
-  // Avatar section
   const avatarSize = 80;
   const avatarX = 40;
   const avatarY = 40;
 
-  // Save the context before avatar clipping
   ctx.save();
 
-  // Glowing avatar border
   ctx.shadowColor = "#FFF";
   ctx.shadowBlur = 15;
   ctx.beginPath();
@@ -55,10 +48,8 @@ async function createRankCard(userData) {
   ctx.stroke();
   ctx.closePath();
 
-  // Reset shadow for avatar
   ctx.shadowBlur = 0;
 
-  // Avatar clipping and drawing
   ctx.beginPath();
   ctx.arc(
     avatarX + avatarSize / 2,
@@ -75,10 +66,8 @@ async function createRankCard(userData) {
   );
   ctx.drawImage(avatarImage, avatarX, avatarY, avatarSize, avatarSize);
 
-  // Restore context after avatar
   ctx.restore();
 
-  // Username with bright gradient
   ctx.save();
   const usernameGradient = ctx.createLinearGradient(140, 50, 400, 50);
   usernameGradient.addColorStop(0, "#FFFFFF");
@@ -88,18 +77,15 @@ async function createRankCard(userData) {
   ctx.fillText(userData.username, 140, 70);
   ctx.restore();
 
-  // Stats with colorful accents
   const statsX = 140;
   const statsY = 90;
   const statSpacing = 120;
 
   function drawStat(x, y, label, value, color) {
-    // Label
     ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
     ctx.font = "500 14px 'Arial', sans-serif";
     ctx.fillText(label, x, y);
 
-    // Value with custom color
     ctx.fillStyle = color;
     ctx.font = "bold 20px 'Arial', sans-serif";
     ctx.fillText(value, x, y + 25);
@@ -121,13 +107,14 @@ async function createRankCard(userData) {
     "#FFD700"
   );
 
-  // Enhanced progress bar
   const progressBarY = 140;
   const progressBarWidth = 520;
   const progressBarHeight = 12;
-  const progress = (userData.xp / userData.neededXP) * progressBarWidth;
+  const progress =
+    ((userData.xp - userData.lastLevelXP) /
+      (userData.neededXP - userData.lastLevelXP)) *
+    progressBarWidth;
 
-  // Progress bar background with subtle gradient
   const bgGradient = ctx.createLinearGradient(40, 0, progressBarWidth + 40, 0);
   bgGradient.addColorStop(0, "rgba(255, 255, 255, 0.1)");
   bgGradient.addColorStop(1, "rgba(255, 255, 255, 0.2)");
@@ -143,7 +130,6 @@ async function createRankCard(userData) {
   ctx.fillStyle = bgGradient;
   ctx.fill();
 
-  // Progress bar fill with vibrant gradient
   const progressGradient = ctx.createLinearGradient(
     40,
     0,
@@ -165,7 +151,6 @@ async function createRankCard(userData) {
   ctx.fillStyle = progressGradient;
   ctx.fill();
 
-  // Shiny highlight on progress bar
   ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
   ctx.beginPath();
   ctx.roundRect(

@@ -14,12 +14,9 @@ export class Server {
     try {
       const result = await dbclient.query(query, values);
       const serverData = result.rows[0];
-
-      if (!serverData) {
-        // If no server data found, return the default value for the key if available
-        return defaultSettings[key] || null;
+      if (!serverData || Object.keys(serverData.settings || {}).length === 0) {
+        return this.getNestedSetting(defaultSettings, key) || null;
       }
-
       const settings = serverData.settings || {};
       return this.getNestedSetting(settings, key);
     } catch (error) {

@@ -1,10 +1,11 @@
-import { AttachmentBuilder } from "discord.js";
+import { ApplicationCommandOptionType, AttachmentBuilder } from "discord.js";
 import createRankCard, { getLevel, xpForLevel } from "../../utils/levels.js";
 import { Level } from "../../models/Level.js";
 
 export default {
   callback: async (client, interaction, commandData) => {
-    const userID = commandData.author.id;
+    const userID = commandData.args[0] || commandData.author.id;
+    console.log(userID);
     const guildID = commandData.guild.id;
     let levelData = { xp: 0 };
     try {
@@ -41,7 +42,15 @@ export default {
   },
   name: "rank",
   description: "Check your or another users rank!",
+  alias: ["r"],
   devOnly: false,
   testOnly: false,
-  options: [],
+  options: [
+    {
+      name: "user",
+      type: ApplicationCommandOptionType.User,
+      description: "The user whose rank you want to check.",
+      required: false,
+    },
+  ],
 };

@@ -1,32 +1,43 @@
-# **SaturnWave**
+<img src="/src/images/icons/SaturnWaveBanner1.jpg" height="150" alt="SaturnWave Banner" />
 
 **SaturnWave** is an open-source Discord bot that offers a variety of commands to enhance your server's functionality and engagement.
 
 > [!CAUTION]
 > This bot is NOT intended to be used for production in it's current state. This project is still under development and not meant for public use yet. This bot will NOT work right.
 
+> [!IMPORTANT]
+> More in depth docs will be releasing with the release of SaturnWave for Production.
+
 ## **Commands**
 
 Here are some of the main commands available:
 
-- **`/server`**: Get detailed information about the server.
-- **`/user`**: Fetch details about a user.
-- **`/avatar`**: View a user's avatar.
-- **`/lurk`**: Set your status to "lurking".
-- **`/ban`**: Ban a user from the server.
-- **`/kick`**: Kick a user from the server.
-- **`/flip`**: Flip a coin.
-- **`/roll`**: Roll a die.
-- **`/invite`**: Get the bot's invite link.
-- **`/ping`**: Check the bot's latency.
-- **`/uptime`**: View how long the bot has been online.
+### Command List
+
+- **`/server`** – Displays detailed server information.
+- **`/user [@user]`** – Fetches details about a user.
+- **`/avatar [@user]`** – Shows a user’s avatar.
+- **`/lurk`** – Sets your status to "lurking".
+- **`/mute <@user> <duration> [reason] [proof]`** – Mutes a user. _(Alias: `/timeout`)_
+- **`/ban <@user> [reason] [proof]`** – Bans a user from the server.
+- **`/kick <@user> [reason] [proof]`** – Kicks a user from the server.
+- **`/flip`** – Flips a coin.
+- **`/roll [sides]`** – Rolls a die with a specified number of sides _(default: 6)_.
+- **`/invite`** – Provides the bot’s invite link.
+- **`/ping`** – Checks the bot’s latency.
+- **`/uptime`** – Shows how long the bot has been online.
 
 ## **Modules: Rings**
 
 You can enable or disable modules with the following commands:
 
-- **Enable**: `/module enable [module name]`
-- **Disable**: `/module disable [module name]`
+- ~~**Enable**: `/module enable [module name]`~~
+- ~~**Disable**: `/module disable [module name]`~~
+
+_Please use these commands for now_
+
+- `/settings modules.[module_name] true`
+- `/settings modules.[module_name] false`
 
 ### **Modules List**
 
@@ -45,11 +56,27 @@ You can enable or disable modules with the following commands:
 
 The _Levels_ module allowes users to gain levels by chatting in your server, as well as unlocking special perks to go along with that.
 
+- **Commands:**
+  - **`/rank [user]`** - Shows your or another users rank. _(Alias: `/r`)_
+
 ## **Version**
 
 **Current version**: **V2**
 
 SaturnWave is open-source and maintained by its creator. Feel free to explore the code and adapt it for your needs.
+
+## **Settings**
+
+You may need to change and adjust settings to your servers preference. Use the command below, along with a list of settings keys to configure the bot to your needs.
+
+`/settings <key> <value>`
+
+### **Keys**
+
+- `general.prefix` - Changes the prefix for commands. | Default: ;
+- `levels.multiplier` - chances the multiplier for xp requirements each level. | Default: 1.2
+- `levels.min-xp` - Changes the minimum xp earned per message. | Default: 10
+- `levels.max-xp` - Changes the maximum xp earned per message. | Default: 15
 
 ## **What to expect**
 

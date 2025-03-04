@@ -124,14 +124,14 @@ export default {
     try {
       await targetUser.timeout(msDuration, reason);
       const dmStatus = await modActionDM({
-              client,
-              interaction,
-              userID: targetUser.id,
-              action: "Mute",
-              actionLine: "muted",
-              reason: reason,
-              duration:  prettyMS(msDuration, { verbose: true }),
-            });
+        client,
+        interaction,
+        userID: targetUser.id,
+        action: "Mute",
+        actionLine: "muted",
+        reason: reason,
+        duration: prettyMS(msDuration, { verbose: true }),
+      });
       await modActionMessage({
         interaction,
         success: true,
@@ -139,7 +139,7 @@ export default {
         actionLine: `Muted ${targetUser}`,
         reason,
         duration: prettyMS(msDuration, { verbose: true }),
-        dmStatus
+        dmStatus,
       });
       await Server.addCase({
         serverID: interaction.guild.id,
@@ -163,6 +163,7 @@ export default {
   description: "Mute a user!",
   devOnly: false,
   testOnly: false,
+  alias: ["timeout"],
   permissionsRequired: [PermissionFlagsBits.MuteMembers],
   botPermissionsRequired: [PermissionFlagsBits.MuteMembers],
   options: [

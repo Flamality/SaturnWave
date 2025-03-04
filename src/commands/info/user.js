@@ -10,8 +10,7 @@ export default {
       });
     }
 
-    const member = commandData.guild.members.cache.get(user.id); // Get member for guild-specific info (if needed)
-
+    const member = commandData.guild.members.cache.get(user.id);
     const embed = new EmbedBuilder()
       .setTitle(`User Info - ${user.tag}`)
       .setThumbnail(user.displayAvatarURL({ dynamic: true }))
