@@ -1,4 +1,3 @@
-// event.js
 import { fileURLToPath, pathToFileURL } from "url";
 import path from "path";
 import { getAllFiles } from "../utils/getAllFiles.js";
@@ -15,7 +14,6 @@ export default (client) => {
 
     client.on(eventName, async (arg) => {
       for (const eventFile of eventFiles) {
-        // ✅ Convert the file path to a file:// URL
         const { default: eventFunction } = await import(
           pathToFileURL(eventFile).href
         );

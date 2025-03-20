@@ -4,9 +4,7 @@ import {
   PermissionFlagsBits,
 } from "discord.js";
 import { Server } from "../../models/Settings.js";
-import {
-  modActionMessage,
-} from "../../utils/userEvents.js";
+import { modActionMessage } from "../../utils/userEvents.js";
 
 export default {
   callback: async (client, interaction, commandData) => {
@@ -24,7 +22,6 @@ export default {
       return;
     }
 
-    // Fetch all cases for the user
     let cases;
     try {
       cases = await Server.getCases({ userID });
@@ -39,7 +36,6 @@ export default {
       return;
     }
 
-    // If the user has no cases
     if (!cases || cases.length === 0) {
       await modActionMessage({
         interaction,
@@ -49,7 +45,6 @@ export default {
       return;
     }
 
-    // Build the embed
     const embed = new EmbedBuilder()
       .setTitle(`${targetUser.user.tag}'s Cases`)
       .setColor("#5865F2")
@@ -58,7 +53,6 @@ export default {
         iconURL: commandData.author.displayAvatarURL({ dynamic: true }),
       });
 
-    // Add each case to the embed description
     let casesDescription = "";
     cases.forEach((userCase, index) => {
       casesDescription += `
@@ -69,10 +63,8 @@ export default {
 **Case #:** ${userCase.caseNumber}\n`;
     });
 
-    // Set the embed description
     embed.setDescription(casesDescription);
 
-    // Send the embed to the interaction
     await interaction.reply({ embeds: [embed] });
   },
   name: "cases",

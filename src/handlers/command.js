@@ -7,13 +7,18 @@ import {
 import getLocalCommands from "../utils/getLocalCommands.js";
 import config from "../../config.json" assert { type: "json" };
 import { modActionMessage } from "../utils/userEvents.js";
+import { Server } from "../models/Settings.js";
 
-const { testServer, devs, prefix } = config;
+const { testServer, devs } = config;
 
 export default async (client, interaction) => {
   const localCommands = await getLocalCommands();
   let commandData = null;
   let args = [];
+  const prefix = await Server.getSetting(
+    interaction.guild.id,
+    "general.prefix"
+  );
 
   if (interaction.isCommand?.()) {
     const commandObject = localCommands.find(
@@ -59,27 +64,27 @@ export default async (client, interaction) => {
 
   if (!commandData || commandData.author?.bot) return;
 
-  if (
-    commandData.commandObject.devOnly &&
-    !devs.includes(commandData.author.id)
-  ) {
-    await modActionMessage({
-      interaction,
-      action: commandData.name,
-      actionLine: "You must be a developer to use this command.",
-    });
-  }
+  switch (true) {
+    case !commandData || commandData.author?.bot:
+      return;
 
-  if (
-    commandData.commandObject.testOnly &&
-    interaction.guild.id !== testServer
-  ) {
-    await modActionMessage({
-      interaction,
-      action: commandData.name,
-      actionLine: "This command if only for testing environments.",
-    });
-    return;
+    case commandData.commandObject.devOnly &&
+      !devs.includes(commandData.author.id):
+      await modActionMessage({
+        interaction,
+        action: commandData.name,
+        actionLine: "You must be a developer to use this command.",
+      });
+      return;
+
+    case commandData.commandObject.testOnly &&
+      interaction.guild.id !== testServer:
+      await modActionMessage({
+        interaction,
+        action: commandData.name,
+        actionLine: "This command if only for testing environments.",
+      });
+      return;
   }
 
   if (commandData.commandObject.default.botPermissionsRequired?.length) {
@@ -123,6 +128,48 @@ export default async (client, interaction) => {
           actionLine: `You need the **${permissionName}** permission to use this command.`,
         });
         return;
+      }
+    }
+  }
+  if (commandData.commandObject.default.options?.length) {
+    let formattedArgs = commandData.commandObject.default.options
+      .map((option) =>
+        option.required ? `<${option.name}>` : `[${option.name}]`
+      )
+      .join(" ");
+
+    for (const [
+      index,
+      option,
+    ] of commandData.commandObject.default.options.entries()) {
+      const arg = commandData.args[index];
+
+      if (!arg && option.required) {
+        await interaction.reply({
+          content: `Missing required argument: \`${option.name}\`.\nUsage: \`${commandData.commandObject.default.name} ${formattedArgs}\``,
+        });
+        return;
+      }
+
+      if (
+        option.type === ApplicationCommandOptionType.String &&
+        typeof arg !== "string" &&
+        arg
+      ) {
+        await interaction.reply({
+          content: `Invalid argument for \`${option.name}\`. Expected a \`String\`.\nUsage: \`${commandData.commandObject.default.name} ${formattedArgs}\``,
+        });
+        return;
+      }
+
+      if (option.type === ApplicationCommandOptionType.User && arg) {
+        const userId = cleanId(arg);
+        if (!userId || !/^\d{18,19}$/.test(userId)) {
+          await interaction.reply({
+            content: `Invalid argument for \`${option.name}\`. Expected a Discord user or valid user ID.\nUsage: \`${commandData.commandObject.default.name} ${formattedArgs}\``,
+          });
+          return;
+        }
       }
     }
   }

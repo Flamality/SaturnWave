@@ -1,11 +1,20 @@
 import { ApplicationCommandOptionType, AttachmentBuilder } from "discord.js";
 import createRankCard, { getLevel, xpForLevel } from "../../utils/levels.js";
 import { Level } from "../../models/Level.js";
+import { Server } from "../../models/Settings.js";
 
 export default {
   callback: async (client, interaction, commandData) => {
+    const enabled = await Server.getSetting(
+      Number(interaction.guild.id),
+      "modules.levels"
+    );
+    if (!enabled) {
+      await interaction.reply("Level module not enabled.");
+      return;
+    }
+    console.log(enabled);
     const userID = commandData.args[0] || commandData.author.id;
-    console.log(userID);
     const guildID = commandData.guild.id;
     let levelData = { xp: 0 };
     try {
@@ -14,10 +23,21 @@ export default {
         levelData = data;
       }
     } catch (error) {}
+    const baseXP = await Server.getSetting(
+      Number(interaction.guild.id),
+      "levels.base"
+    );
+    const multiplier = await Server.getSetting(
+      Number(interaction.guild.id),
+      "levels.multiplier"
+    );
     const serverRank = await Level.getRank({ userID, guildID });
-    const level = getLevel(levelData.xp);
-    const neededXP = xpForLevel(level);
-    const lastLevelXP = xpForLevel(level - 1);
+    const level = getLevel(levelData.xp, baseXP, multiplier);
+    const neededXP = xpForLevel(level, baseXP, multiplier);
+    var lastLevelXP = xpForLevel(level - 1, baseXP, multiplier);
+    if (level == 0) {
+      lastLevelXP = 0;
+    }
     const userData = {
       username: commandData.author.username,
       xp: levelData.xp,

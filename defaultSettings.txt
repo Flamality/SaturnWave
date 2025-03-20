@@ -1,0 +1,10 @@
+ACCEPTABLE TYPES
+------------------
+boolean
+string
+roles
+channels
+role
+channel
+integer
+float

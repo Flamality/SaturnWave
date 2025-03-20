@@ -1,13 +1,122 @@
 {
   "general": {
-    "prefix": ";"
+    "prefix": {
+      "name": "Prefix",
+      "value": ";",
+      "type": "string",
+      "emoji": ""
+    }
   },
   "modules": {
-    "levels": true
+    "levels": {
+      "name": "Levels module",
+      "value": false,
+      "type": "boolean",
+      "emoji": ""
+    },
+    "autoroles": {
+      "name": "Autorole module",
+      "value": false,
+      "type": "boolean",
+      "emoji": ""
+    },
+    "tickets": {
+      "name": "Tickets module",
+      "value": false,
+      "type": "boolean",
+      "emoji": ""
+    }
+  },
+  "autoroles": {
+    "roles": {
+      "name": "Roles",
+      "value": [],
+      "type": "roles",
+      "emoji": ""
+    },
+    "channel": {
+      "name": "Channel",
+      "value": null,
+      "type": "channel",
+      "emoji": ""
+    }
   },
   "levels": {
-    "multiplier": 1.2,
-    "min-xp": 10,
-    "max-xp": 15
+    "base": {
+      "name": "Base XP",
+      "value": 500,
+      "type": "number",
+      "emoji": ""
+    },
+    "multiplier": {
+      "name": "Multiplier",
+      "value": 1.2,
+      "type": "number",
+      "emoji": ""
+    },
+    "min-xp": {
+      "name": "Minimum XP",
+      "value": 10,
+      "type": "number",
+      "emoji": ""
+    },
+    "max-xp": {
+      "name": "Maximum XP",
+      "value": 15,
+      "type": "number",
+      "emoji": ""
+    }
+  },
+  "welcome": {
+    "welcome-message": {
+      "name": "Welcome Message",
+      "value": "Welcome {user} into the server!",
+      "type": "string",
+      "emoji": ""
+    },
+    "welcome-channel": {
+      "name": "Channel",
+      "value": null,
+      "type": "channel",
+      "emoji": ""
+    },
+    "welcome-enabled": {
+      "name": "Welcome message enabled",
+      "value": false,
+      "type": "boolean",
+      "emoji": ""
+    },
+    "goodbye-message": {
+      "name": "Leave message",
+      "value": "{user} has left, we hope to see you again soon!",
+      "type": "string",
+      "emoji": ""
+    },
+    "goodbye-channel": {
+      "name": "Channel",
+      "value": null,
+      "type": "channel",
+      "emoji": ""
+    },
+    "goodbye-enabled": {
+      "name": "Goodbye enabled",
+      "value": false,
+      "type": "boolean",
+      "emoji": ""
+    }
+  },
+  "tickets": {
+    "support-roles": {
+      "name": "Support roles",
+      "value": [],
+      "type": "roles",
+      "emoji": ""
+    },
+    "tag-support-roles": {
+      "name": "Tag support roles",
+      "value": true,
+      "type": "boolean",
+      "emoji": ""
+    }
   }
 }

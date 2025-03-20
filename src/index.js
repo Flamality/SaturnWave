@@ -4,12 +4,13 @@ import "dotenv/config";
 import event from "./handlers/event.js";
 
 import pkg from "pg";
+import { startAPI } from "./api.js";
 const { Client: DBClient } = pkg;
 export const dbclient = new DBClient({
   connectionString: process.env.DATABASE_URL,
   connectionTimeoutMillis: 10000,
 });
-const client = new Client({
+export const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
@@ -41,4 +42,5 @@ const client = new Client({
     .catch((err) => console.error("Connection error", err.stack));
   event(client);
   client.login(process.env.DISCORD_TOKEN);
+  startAPI();
 })();

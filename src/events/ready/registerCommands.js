@@ -7,8 +7,6 @@ import getApplicationCommands from "../../utils/getApplicationCommands.js";
 const { testServer, devs } = config;
 
 export default async (client) => {
-  // Await the commands from getLocalCommands
-
   try {
     const localCommands = await getLocalCommands();
     const applicationCommands = await getApplicationCommands(

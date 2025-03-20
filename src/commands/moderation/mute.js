@@ -41,7 +41,6 @@ export default {
       return;
     }
 
-    // 🤖 Prevent muting bots
     if (targetUser.user.bot) {
       await modActionMessage({
         interaction,
@@ -52,7 +51,6 @@ export default {
       return;
     }
 
-    // ⏲️ Duration checks
     let msDuration = false;
     try {
       msDuration = ms(duration);
@@ -94,7 +92,6 @@ export default {
       return;
     }
 
-    // 🔑 Role hierarchy checks
     const botMember = await interaction.guild.members.fetchMe();
     const targetUserRolePosition = targetUser.roles.highest.position;
     const requestUserRolePosition = interaction.member.roles.highest.position;
@@ -120,7 +117,6 @@ export default {
       return;
     }
 
-    // 🔇 Apply mute
     try {
       await targetUser.timeout(msDuration, reason);
       const dmStatus = await modActionDM({
